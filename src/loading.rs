@@ -3,31 +3,31 @@ use crate::AppState;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 
-pub struct LoadingPlugin;
+pub struct AssetsWarmUpPlugin;
 
-impl Plugin for LoadingPlugin {
+impl Plugin for AssetsWarmUpPlugin {
     fn build(&self, app: &mut App) {
         app.add_loading_state(
-            LoadingState::new(AppState::Loading)
+            LoadingState::new(AppState::AssetsWarmup)
                 .continue_to_state(AppState::Menu)
-                .load_collection::<TextureAssets>()
+                .load_collection::<TextureAssets>(),
         );
     }
 }
 
 #[derive(AssetCollection, Resource)]
 pub struct TextureAssets {
-    #[asset(path = "textures/blank.png")]
+    #[asset(path = "textures\\blank.png")]
     pub blank: Handle<Image>,
-    #[asset(path = "textures/towerplot.png")]
+    #[asset(path = "textures\\towerplot.png")]
     pub tower_plot: Handle<Image>,
-    #[asset(path = "textures/tower.png")]
+    #[asset(path = "textures\\tower.png")]
     pub tower: Handle<Image>,
-    #[asset(path = "textures/path.png")]
+    #[asset(path = "textures\\path.png")]
     pub path: Handle<Image>,
-    #[asset(path = "textures/castle.png")]
+    #[asset(path = "textures\\castle.png")]
     pub castle: Handle<Image>,
-    #[asset(path = "textures/spawn.png")]
+    #[asset(path = "textures\\spawn.png")]
     pub spawn: Handle<Image>,
 }
 

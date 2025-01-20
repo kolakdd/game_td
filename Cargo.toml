@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 bevy = "0.15.1"
 bevy_asset_loader = "0.22.0"
+bevy_prototype_lyon = "0.13.0"
 
 [workspace]
 resolver = "2"

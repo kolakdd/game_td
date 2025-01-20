@@ -8,7 +8,8 @@ impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
         let map = Map::load_map();
         app.insert_resource(map)
-            .add_systems(OnEnter(AppState::Menu), (render_map, setup_camera));
+            .add_systems(OnEnter(AppState::InGame), (render_map, setup_camera))
+            .add_systems(OnExit(AppState::InGame), despawn_screen::<MapTile>);
     }
 }
 
@@ -63,14 +64,14 @@ impl Map {
         const MAP_STR: &str = "\
             #############\n\
             #############\n\
-            ###.#.#######\n\
-            #a++++0++++q#\n\
-            #####+#+#.###\n\
-            ###+++#++.###\n\
-            ###+.###+++##\n\
-            ###+++#.#.+##\n\
-            #####++++++##\n\
-            ####.#.######\n\
+            #######.#####\n\
+            #a+####++++q#\n\
+            ##+####+#####\n\
+            ##+0##.+#####\n\
+            #.+####++++##\n\
+            ##++++###.+##\n\
+            ####.++++++##\n\
+            #############\n\
             #############";
 
         let mut map = Map {
@@ -169,13 +170,16 @@ impl Map {
 }
 
 fn setup_camera(mut commands: Commands, map: Res<Map>) {
-    let camera_bundle = Camera2d::default();
+    println!("start setup camera");
+    let camera_bundle: Camera2d = Default::default();
     let x = (map.width as f32 / 2. - 0.5) * map.tile_size;
     let y = (map.height as f32 / 2. - 0.5) * map.tile_size;
     commands.spawn((camera_bundle, Transform::from_xyz(x, y, 0.)));
+    println!("end setup camera");
 }
 
 fn render_map(mut commands: Commands, map: Res<Map>, texture_assets: Res<TextureAssets>) {
+    println!("start render map!");
     for row in 0..map.height {
         for column in 0..map.width {
             let tile = &map.tiles[row][column];
@@ -194,5 +198,12 @@ fn render_map(mut commands: Commands, map: Res<Map>, texture_assets: Res<Texture
                     tile: tile.clone(),
                 });
         }
+    }
+    println!("end render map!");
+}
+
+fn despawn_screen<T: Component>(to_despawn: Query<Entity, With<T>>, mut commands: Commands) {
+    for entity in &to_despawn {
+        commands.entity(entity).despawn();
     }
 }

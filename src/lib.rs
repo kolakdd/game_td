@@ -1,12 +1,15 @@
-use bevy::prelude::*;
-
 use crate::map::MapPlugin;
-// use crate::ui::UiPlugin;
+use crate::menu::MenuPlugin;
+use bevy::prelude::*;
+use bevy_prototype_lyon::plugin::ShapePlugin;
+use loading::AssetsWarmUpPlugin;
 
 mod loading;
 mod map;
+mod menu;
 mod ui;
 
+const TEXT_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
 
 pub const MAP_Z: f32 = 0.;
 pub const TOWER_Z: f32 = 1.;
@@ -15,9 +18,11 @@ pub const BULLET_Z: f32 = 4.;
 
 #[derive(Debug, States, Hash, Eq, PartialEq, Clone, Default)]
 pub enum AppState {
+    AssetsWarmup,
     Restart,
     #[default]
-    Loading,
+    LoadingMenu,
+    LoadingLevel,
     Saving,
     InGame,
     Menu,
@@ -29,7 +34,7 @@ impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         println!("DO GAME PLUGIN");
         app.insert_resource(ClearColor(Color::BLACK))
-            .insert_state(AppState::Loading)
-            .add_plugins((MapPlugin,));
+            .insert_state(AppState::AssetsWarmup)
+            .add_plugins((AssetsWarmUpPlugin, ShapePlugin, MenuPlugin, MapPlugin));
     }
 }
