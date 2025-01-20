@@ -8,11 +8,8 @@ pub struct LoadingPlugin;
 impl Plugin for LoadingPlugin {
     fn build(&self, app: &mut App) {
         app.add_loading_state(
-            LoadingState::new(AppState::Loading).continue_to_state(AppState::Menu),
-        )
-        .add_loading_state(
             LoadingState::new(AppState::Loading)
-                .continue_to_state(AppState::InGame)
+                .continue_to_state(AppState::Menu)
                 .load_collection::<TextureAssets>()
         );
     }
@@ -22,9 +19,9 @@ impl Plugin for LoadingPlugin {
 pub struct TextureAssets {
     #[asset(path = "textures/blank.png")]
     pub blank: Handle<Image>,
-    #[asset(path = "textures\\towerplot.png")]
+    #[asset(path = "textures/towerplot.png")]
     pub tower_plot: Handle<Image>,
-    #[asset(path = "textures\tower.png")]
+    #[asset(path = "textures/tower.png")]
     pub tower: Handle<Image>,
     #[asset(path = "textures/path.png")]
     pub path: Handle<Image>,

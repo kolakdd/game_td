@@ -1,10 +1,11 @@
 use bevy::prelude::*;
 
 use crate::map::MapPlugin;
+// use crate::ui::UiPlugin;
 
 mod loading;
 mod map;
-
+mod ui;
 
 
 pub const MAP_Z: f32 = 0.;
