@@ -1,13 +1,23 @@
-use crate::map::MapPlugin;
-use crate::menu::MenuPlugin;
-use bevy::prelude::*;
-use bevy_prototype_lyon::plugin::ShapePlugin;
 use loading::AssetsWarmUpPlugin;
+use map::MapPlugin;
+use menu::MenuPlugin;
+use ui::UiPlugin;
+use enemies::EnemiesPlugin;
+use towers::TowersPlugin;
+use bullets::BulletPlugin;
+use fps::FPSPlugin;
 
 mod loading;
 mod map;
 mod menu;
 mod ui;
+mod enemies;
+mod towers;
+mod bullets;
+mod fps;
+
+use bevy::prelude::*;
+use bevy_prototype_lyon::plugin::ShapePlugin;
 
 const TEXT_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
 
@@ -35,6 +45,16 @@ impl Plugin for GamePlugin {
         println!("DO GAME PLUGIN");
         app.insert_resource(ClearColor(Color::BLACK))
             .insert_state(AppState::AssetsWarmup)
-            .add_plugins((AssetsWarmUpPlugin, ShapePlugin, MenuPlugin, MapPlugin));
+            .add_plugins((
+                AssetsWarmUpPlugin,
+                ShapePlugin,
+                MenuPlugin,
+                BulletPlugin,
+                MapPlugin,
+                UiPlugin,
+                EnemiesPlugin,
+                TowersPlugin,
+                FPSPlugin,
+            ));
     }
 }

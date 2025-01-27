@@ -1,16 +1,18 @@
-use crate::AppState;
-use bevy::prelude::*;
+use std::time::Instant;
 
+use crate::AppState;
+use bevy::{color::palettes::css::CRIMSON, prelude::*};
 pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(GameState::default())
             .init_resource::<ButtonColors>()
-            .add_systems(OnEnter(AppState::InGame), init_life)
+            .add_systems(OnEnter(AppState::InGame), init_stats)
             .add_systems(
                 Update,
-                (update_game_state, click_retry_button).run_if(in_state(AppState::InGame)),
+                (update_game_state, retry_system, click_retry_button)
+                    .run_if(in_state(AppState::InGame)),
             );
     }
 }
@@ -39,97 +41,145 @@ struct HealthText;
 #[derive(Component)]
 struct ScoreText;
 
+#[derive(Component)]
+struct CoinsText;
+
 #[derive(Resource)]
 pub struct GameState {
     pub health: usize,
     pub score: usize,
+    pub coins: usize,
     pub enemy_health: i32,
 }
 
 impl Default for GameState {
     fn default() -> Self {
         GameState {
-            health: 20,
-            score: 0,
+            health: 1488,
+            score: 1337,
+            coins: 228,
             enemy_health: 1,
         }
     }
 }
 
-fn init_life(
-    mut commands: Commands,
-    asset_server: ResMut<AssetServer>,
-    game_state: Res<GameState>,
-) {
-    let font: Handle<Font> = Default::default();
-    // root node
+fn init_stats(mut commands: Commands, game_state: Res<GameState>) {
+    // Health Node
     commands
-        .spawn(Node {
-            ..Default::default()
-        })
+        .spawn((
+            Node {
+                position_type: PositionType::Absolute,
+                left: Val::Px(10.),
+                top: Val::Px(10.),
+                ..Default::default()
+            },
+        ))
         .with_children(|parent| {
             parent
                 .spawn(Text::new(format!("Health: {}", game_state.health)))
                 .insert(HealthText);
         });
+    // Score Node
     commands
-        .spawn(Node {
-            ..Default::default()
-        })
+        .spawn((
+            Node {
+                position_type: PositionType::Absolute,
+                left: Val::Px(10.),
+                top: Val::Px(30.),
+                ..Default::default()
+            },
+        ))
         .with_children(|parent| {
             parent
-                .spawn(Text::new(format!("Health: {}", game_state.health)))
-                .insert(HealthText);
+                .spawn(Text::new(format!("Score: {}", game_state.score)))
+                .insert(ScoreText);
+        });
+    // Coins Node
+    commands
+        .spawn((
+            Node {
+                position_type: PositionType::Absolute,
+                left: Val::Px(10.),
+                top: Val::Px(50.),
+                ..Default::default()
+            },
+        ))
+        .with_children(|parent| {
+            parent
+                .spawn(Text::new(format!("Coins: {}", game_state.coins)))
+                .insert(CoinsText);
         });
 }
+
 
 fn update_game_state(
     game_state: Res<GameState>,
-    mut health_query: Query<&mut Text, (With<HealthText>, Without<ScoreText>)>,
-    mut score_query: Query<&mut Text, (With<ScoreText>, Without<HealthText>)>,
+    mut queries: ParamSet<(
+        Query<&mut Text, With<HealthText>>,
+        Query<&mut Text, With<ScoreText>>,
+        Query<&mut Text, With<CoinsText>>,
+    )>,
 ) {
-    if game_state.is_changed() {
-        for mut text in health_query.iter_mut() {}
-        for mut text in score_query.iter_mut() {}
+    if true {
+    // if game_state.is_changed() {
+        for mut text in queries.p0().iter_mut() {
+            *text = Text::new(format!(
+                "Health: {} - {:?}",
+                game_state.health,
+                Instant::now()
+            ));
+        }
+        for mut text in queries.p1().iter_mut() {
+            *text = Text::new(format!(
+                "Score: {} - {:?}",
+                game_state.score,
+                Instant::now()
+            ));
+        }
+        for mut text in queries.p2().iter_mut() {
+            *text = Text::new(format!(
+                "Coins: {} - {:?}",
+                game_state.coins,
+                Instant::now()
+            ));
+        }
     }
 }
 
-// fn retry_system(
-//     mut commands: Commands,
-//     asset_server: ResMut<AssetServer>,
-//     game_state: Res<GameState>,
-//     button_materials: Res<ButtonColors>,
-// ) {
-//     if game_state.is_changed() && game_state.health < 1 {
-//         commands
-//             .spawn(ButtonBundle {
-//                 style: Style {
-//                     width: Val::Px(150.0),
-//                     height: Val::Px(65.0),
-//                     margin: UiRect::all(Val::Auto),
-//                     justify_content: JustifyContent::Center,
-//                     align_items: AlignItems::Center,
-//                     ..Default::default()
-//                 },
-//                 background_color: button_materials.normal.into(),
-//                 ..Default::default()
-//             })
-//             .insert(RetryButton)
-//             .with_children(|parent| {
-//                 parent.spawn(TextBundle {
-//                     text: Text::from_section(
-//                         "Restart".to_string(),
-//                         TextStyle {
-//                             font_size: 40.0,
-//                             color: Color::rgb(0.9, 0.9, 0.9),
-//                             font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-//                         },
-//                     ),
-//                     ..Default::default()
-//                 });
-//             });
-//     }
-// }
+fn retry_system(
+    mut commands: Commands,
+    game_state: Res<GameState>,
+) {
+    // if true {
+    if game_state.is_changed() && game_state.health < 1 {
+        commands
+            .spawn((
+                Button,
+                Node {
+                width: Val::Px(300.0),
+                height: Val::Px(75.0),
+                margin: UiRect::all(Val::Auto),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                ..Default::default()
+            }))
+            .insert(RetryButton)
+            .with_children(|parent| {
+                parent.spawn((
+                    Text::new("restart"),
+                    TextColor(Color::srgb(0.647, 0.165, 0.165)),
+                    TextFont {
+                        font_size: 67.0,
+                        ..default()
+                    },
+                    Node {
+                        margin: UiRect::all(Val::Px(50.0)),
+                        ..default()
+                    },
+                ));
+            });
+    }
+}
 
 fn click_retry_button(
     mut commands: Commands,

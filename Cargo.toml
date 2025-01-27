@@ -4,9 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = "0.15.1"
+bevy = { version = "0.15.1", features = ["bevy_dev_tools"] }
 bevy_asset_loader = "0.22.0"
+bevy_framepace = "0.18.1"
 bevy_prototype_lyon = "0.13.0"
+rand = "0.8.5"
 
 [workspace]
 resolver = "2"

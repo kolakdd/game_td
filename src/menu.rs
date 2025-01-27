@@ -20,10 +20,7 @@ impl Plugin for MenuPlugin {
             .add_systems(
                 Update,
                 (menu_action, button_system).run_if(in_state(AppState::Menu)),
-            )
-
-            ;
-
+            );
     }
 }
 
@@ -35,16 +32,13 @@ fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
 }
 
-fn despawn_menu(
-    mut q: Query<&mut Camera>,
-) {
+fn despawn_menu(mut q: Query<&mut Camera>) {
     let mut camera = q.single_mut();
     camera.is_active = !camera.is_active;
 }
 
 #[derive(Component, Resource, Debug, PartialEq, Eq, Clone, Copy)]
 struct SelectedLevel(u8);
-
 
 #[derive(Clone, Default, Eq, PartialEq, Debug, Hash, States)]
 enum MenuState {
@@ -54,7 +48,6 @@ enum MenuState {
     #[default]
     Disabled,
 }
-
 
 #[derive(Component)]
 struct MenuComponent;
@@ -68,7 +61,6 @@ enum MenuButtonAction {
     Credits,
     Quit,
 }
-
 
 const NORMAL_BUTTON: Color = Color::srgb(0.15, 0.15, 0.15);
 const HOVERED_BUTTON: Color = Color::srgb(0.25, 0.25, 0.25);
@@ -112,7 +104,6 @@ fn setting_button<T: Resource + Component + PartialEq + Copy>(
     }
 }
 // ---------------------------------------------------------------------------------------------
-
 
 fn main_menu_setup(mut commands: Commands) {
     // Common style for all buttons on the screen
@@ -215,7 +206,6 @@ fn main_menu_setup(mut commands: Commands) {
         });
 }
 
-
 fn menu_action(
     interaction_query: Query<
         (&Interaction, &MenuButtonAction),
@@ -225,7 +215,6 @@ fn menu_action(
     mut menu_state: ResMut<NextState<MenuState>>,
     mut app_state: ResMut<NextState<AppState>>,
 ) {
-
     for (interaction, menu_button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
             match menu_button_action {
